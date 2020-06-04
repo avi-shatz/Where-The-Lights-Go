@@ -9,7 +9,8 @@ if (MSVC)
     add_compile_options (/permissive-)
 endif ()
 
-add_executable (SFMLRotation WIN32 "")
+#add_executable (SFMLRotation WIN32 "")
+add_executable (SFMLRotation "") 
 
 add_subdirectory (include)
 add_subdirectory (src)
