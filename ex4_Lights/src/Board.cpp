@@ -7,9 +7,11 @@ Board::Board()
 
 void Board::create(int size)
 {
+	m_points.clear();
 	createPoints(size);
 	createNbList();
-	m_points[0][0]->connect(m_points[1][1].get());
+	createEdges();
+	randomRotation();
 }
 
 void Board::draw(sf::RenderWindow& window) const
@@ -28,6 +30,49 @@ void Board::click(sf::Vector2f location)
 		{
 			p->click(location);
 		}
+}
+
+
+// turn on the points that connected to the middle.
+void Board::update()
+{
+	std::queue<Point*> q = enqueueMiddlePoint();
+
+	// turn off all points
+	for (int i = 0; i < m_points.size(); i++)
+		for (int j = 0; j < m_points[i].size(); j++)
+			m_points[i][j]->turnOff();
+
+	// turn on the connected points with bfs
+	while (!q.empty())
+	{
+		auto point = q.front();
+		point->turnOn();
+		auto nb = point->getOffNeighbors();
+
+		for (auto& neighbor : nb)
+			if (point->isConnected(neighbor))
+			{
+				q.push(neighbor);
+				neighbor->turnOn();
+			}
+
+		q.pop();
+	}
+}
+
+// returns true if al the points are connected
+bool Board::allConnected()
+{
+	for (int i = 0; i < m_points.size(); i++)
+	{
+		for (int j = 0; j < m_points[i].size(); j++)
+		{
+			if(!m_points[i][j]->isOn())
+				return false;
+		}
+	}
+	return true;
 }
 
 void Board::createPoints(const int size)
@@ -60,6 +105,7 @@ PointsVec Board::createLine(sf::Vector2f location, int size)
 	return std::move(vec);
 }
 
+//set neighbor list for every point
 void Board::createNbList()
 {
 
@@ -69,21 +115,20 @@ void Board::createNbList()
 		for (int j = 0; j < pVec.size(); j++)
 		{
 			auto& p = pVec[j];
-			p->setNeighbor(0, getPByIndex(i, j+1));
-			p->setNeighbor(1, getPByIndex(i, j-1));
-			p->setNeighbor(2, getPByIndex(i+1, j));
-			p->setNeighbor(3, getPByIndex(i-1, j));
+			p->addNeighbor(getPByIndex(i, j+1));
+			p->addNeighbor(getPByIndex(i, j-1));
+			p->addNeighbor(getPByIndex(i+1, j));
+			p->addNeighbor(getPByIndex(i-1, j));
 
 			int a = i+1, b = j-1;
-			if (i < int(m_points.size() / 2) + 1) // if point is in the upper half of the board.
+			if (i < ceil(m_points.size() / 2)) // if point is in the upper half of the board.
 				b = j + 1;
-			p->setNeighbor(4, getPByIndex(a, b));
-
+			p->addNeighbor(getPByIndex(a, b));
 
 			a = i-1, b = j-1;
-			if (i > int(m_points.size() / 2) + int(1)) // if point is in the lower half of the board.
+			if (i > ceil(m_points.size() / 2)) // if point is in the lower half of the board.
 				b = j + 1;
-			p->setNeighbor(5, getPByIndex(a, b));
+			p->addNeighbor(getPByIndex(a, b));
 		}
 
 	}
@@ -95,4 +140,71 @@ Point* Board::getPByIndex(int i, int j)
 		return nullptr;
 
 	return m_points[i][j].get();
+}
+
+void Board::createEdges()
+{
+	connectQueue(enqueueMiddlePoint());
+}
+
+// returns a queue with the middle Point.
+std::queue<Point*> Board::enqueueMiddlePoint()
+{
+	// find middle point
+	int middleLine = ceil(m_points.size() / 2);
+	int middle = ceil(m_points[middleLine].size() / 2);
+	auto middleP = m_points[middleLine][middle].get();
+
+	std::queue<Point*> q;
+	q.push(middleP);
+	return q;
+}
+
+
+/* algorithm to connect all the points to the middle point, using 'bfs' algorithm.
+	with added randomality in order to get a random 'binary tree' */
+void Board::connectQueue(std::queue<Point*> q)
+{
+	while (!q.empty())
+	{
+		auto point = q.front();
+		point->turnOn();
+		auto nb = point->getOffNeighbors();
+
+		if (nb.empty())
+		{
+			q.pop();
+			continue;
+		}
+
+		/* getting a number between 1 and 4, 
+			but not more than the ammaount of avalable neighbors. */
+		int counter = random_generator(1, std::min(int(nb.size()), 4)); 
+		
+		for (size_t i = counter; i > 0; i--)
+		{
+			int indx = random_generator(0, (int)nb.size()-1);
+			auto& neighbor = nb[indx];
+			q.push(neighbor);
+			neighbor->turnOn();
+			point->connect(neighbor);
+			nb.erase(nb.begin() + indx);
+		}
+
+		q.pop();
+	}
+}
+
+
+//rotate all points randomly.
+void Board::randomRotation()
+{
+	for (int i = 0; i < m_points.size(); i++)
+	{
+		for (int j = 0; j < m_points[i].size(); j++)
+		{
+			int rotation = random_generator(0, MAX_EDGES - 1) * ROTATION;
+			m_points[i][j]->rotate(rotation);
+		}
+	}
 }

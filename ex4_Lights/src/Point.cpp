@@ -1,9 +1,7 @@
 #include "Point.h"
 
-Point::Point(const sf::Vector2f& location) : m_point(POINT_SIZE), m_nbList(), m_isOn(false)
+Point::Point(const sf::Vector2f& location) : m_point(POINT_SIZE), m_isOn(false)
 {
-    m_nbList.fill(nullptr); // init empty neighbor list.
-
     m_point.setOrigin(m_point.getRadius(), m_point.getRadius());
     m_point.setPosition(location);
     m_point.setFillColor(POINT_COLOR_OFF);
@@ -22,7 +20,7 @@ void Point::click(const sf::Vector2f& location)
 {
     if (m_point.getGlobalBounds().contains(location))
     {
-        rotate();
+        rotate(ROTATION);
     }
 }
 
@@ -90,15 +88,25 @@ bool Point::isNeighbor(const Point* neighbor) const
     return false;
 }
 
-void Point::setNeighbor(int index, Point* neighbor)
+void Point::addNeighbor(Point* neighbor)
 {
-    m_nbList[index] = neighbor;
+   m_nbList.push_back(neighbor);
 }
 
-Point* Point::getNeighbor(int index)
+std::vector<Point*> Point::getNeighborList()
 {
-    return m_nbList[index];
+    return m_nbList;
 }
+
+std::vector<Point*> Point::getOffNeighbors()
+{
+    std::vector<Point*> lst;
+    std::copy_if(m_nbList.begin(), m_nbList.end(),
+        std::back_inserter(lst), [](Point* val) { return val && !val->isOn(); });
+
+    return  std::move(lst);
+}
+
 
 void Point::turnOn()
 {
@@ -128,10 +136,10 @@ void Point::addEdge(float rotation)
     e.setRotation(rotation + 90);  // add 90 degreas to the rotation for horizontal edges.
 }
 
-void Point::rotate()
+void Point::rotate(float rotation)
 {
     for (auto& e : m_edges)
     {
-        e.rotate(ROTATION);
+        e.rotate(rotation);
     }
 }

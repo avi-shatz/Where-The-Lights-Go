@@ -13,8 +13,11 @@ private:
 	void update();
 	void render();
 
+	void displayMsg(std::string s);
+
 private:
 
+	bool m_playLevel;
 	sf::RenderWindow m_window;
 	Board m_board;
 };

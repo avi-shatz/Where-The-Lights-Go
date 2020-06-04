@@ -1,6 +1,7 @@
 #pragma once
 #include "utilities.h"
 #include "Point.h"
+#include <queue>
 
 constexpr auto WIN_WIDTH = 900;
 constexpr auto WIN_LENGTH = 900;
@@ -17,7 +18,8 @@ public:
 	void create(int size);
 	void draw(sf::RenderWindow& window) const;
 	void click(sf::Vector2f location);
-
+	void update();
+	bool allConnected();
 private:
 
 	void createPoints(int size);
@@ -25,7 +27,9 @@ private:
 	void createNbList();
 	Point* getPByIndex(int i, int j); 
 	void createEdges();
-
+	std::queue<Point*> enqueueMiddlePoint();
+	void connectQueue(std::queue<Point*> q);
+	void randomRotation();
 private:
 	
 	PointsTbl m_points;

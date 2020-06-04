@@ -1,8 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include <array>
 #include "utilities.h"
+#include <list>
 
 constexpr auto POINT_SIZE = 10;
 constexpr auto EDGE_WIDTH = POINT_SIZE / 2;
@@ -29,20 +29,19 @@ public:
 
     bool isNeighbor(const Point* neighbor) const;
 
-    void setNeighbor(int index, Point* neighbor); 
-    Point* getNeighbor(int index);
+    void addNeighbor(Point* neighbor);
+    std::vector<Point*> getNeighborList();
+    std::vector<Point*> getOffNeighbors();
 
     void turnOn();
     void turnOff();
     bool isOn();
-
+    void rotate(float rotation);
 private:
-    bool m_isOn;
-
     void addEdge(float rotation);
-    void rotate();
 
-    NbArray m_nbList; // array of 6 possible neighbor list.
+    bool m_isOn;
+    std::vector<Point*> m_nbList; // list of 6 possible neighbor list (could have a nullptr neighbor).
     sf::CircleShape m_point;
     std::vector<sf::RectangleShape> m_edges;
 };
