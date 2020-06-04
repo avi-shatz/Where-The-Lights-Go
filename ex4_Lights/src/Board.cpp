@@ -23,12 +23,12 @@ void Board::draw(sf::RenderWindow& window) const
 		}
 }
 
-void Board::click(sf::Vector2f location)
+void Board::click(sf::Vector2f location, bool clockWise)
 {
 	for (auto& vec : m_points)
 		for (auto& p : vec)
 		{
-			p->click(location);
+			p->click(location, clockWise);
 		}
 }
 

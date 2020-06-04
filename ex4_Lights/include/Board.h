@@ -17,7 +17,7 @@ public:
 	Board();
 	void create(int size);
 	void draw(sf::RenderWindow& window) const;
-	void click(sf::Vector2f location);
+	void click(sf::Vector2f location, bool clockWise);
 	void update();
 	bool allConnected();
 private:

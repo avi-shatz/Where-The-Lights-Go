@@ -1,6 +1,6 @@
 #include <Game.h>
 
-constexpr auto LEVELS = 3;
+constexpr auto LEVELS = 1;
 constexpr auto MIN_LEVEL_SIZE = 5;
 constexpr auto ADD_LEVEL_SIZE = 2;  // Addition to the size of each 'level up'
 const auto TEXT_COLOR = sf::Color(129, 13, 152);
@@ -10,13 +10,10 @@ Game::Game()
 	: m_window(sf::VideoMode(WIN_WIDTH, WIN_LENGTH), "Lights Game", sf::Style::Close),
 	m_playLevel(true)
 {
-
 }
 
 void Game::run()
 {
-	while (m_window.isOpen())
-	{
 		for (size_t i = 0; i < LEVELS; i++)
 		{
 			m_board.create(MIN_LEVEL_SIZE + i * ADD_LEVEL_SIZE);
@@ -31,8 +28,6 @@ void Game::run()
 		}
 
 		displayMsg("congratulations!  :) you won!!");
-	}
-
 }
 
 void Game::processEvents()
@@ -43,13 +38,17 @@ void Game::processEvents()
 		{
 		case sf::Event::Closed:
 			m_window.close();
+			exit(EXIT_SUCCESS);
 			break;
 		case sf::Event::MouseButtonPressed:
 			const auto location = m_window.mapPixelToCoords({ event.mouseButton.x, event.mouseButton.y });
 			switch (event.mouseButton.button)
 			{
 			case sf::Mouse::Button::Left:
-				m_board.click(location);
+				m_board.click(location, true);
+				break;
+			case sf::Mouse::Button::Right:
+				m_board.click(location, false);
 				break;
 			}
 		}
@@ -73,6 +72,7 @@ void Game::render()
 	m_window.display();
 }
 
+// display a massege box on the screen.
 void Game::displayMsg(std::string s)
 {
 	auto window = sf::RenderWindow(sf::VideoMode(460, 300), "");

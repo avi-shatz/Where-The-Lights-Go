@@ -16,11 +16,12 @@ void Point::draw(sf::RenderTarget& target) const
     }
 }
 
-void Point::click(const sf::Vector2f& location)
+void Point::click(const sf::Vector2f& location, bool clockWise)
 {
     if (m_point.getGlobalBounds().contains(location))
     {
-        rotate(ROTATION);
+        auto rotation = clockWise ? ROTATION : -ROTATION;
+        rotate(rotation);
     }
 }
 

@@ -2,12 +2,11 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include "utilities.h"
-#include <list>
 
 constexpr auto POINT_SIZE = 10;
 constexpr auto EDGE_WIDTH = POINT_SIZE / 2;
 constexpr auto EDGE_LENGTH = POINT_SIZE * 3;
-constexpr auto& POINT_COLOR_OFF = sf::Color::Green;
+constexpr auto& POINT_COLOR_OFF = sf::Color::Blue;
 constexpr auto& POINT_COLOR_ON = sf::Color::Yellow;
 constexpr auto& EDGE_COLOR = sf::Color::Red;
 constexpr auto MAX_EDGES = 6;
@@ -23,7 +22,7 @@ public:
 
     void draw(sf::RenderTarget& target) const;
 
-    void click(const sf::Vector2f& location);
+    void click(const sf::Vector2f& location, bool clockWise);
     void connect(Point* point);
     bool isConnected(const Point* point) const;
 
