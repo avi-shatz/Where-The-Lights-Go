@@ -11,6 +11,7 @@ void Board::create(int size)
 	createPoints(size);
 	createNbList();
 	createEdges();
+	correctMissingEdges();
 	randomRotation();
 }
 
@@ -205,6 +206,49 @@ void Board::randomRotation()
 		{
 			int rotation = random_generator(0, MAX_EDGES - 1) * ROTATION;
 			m_points[i][j]->rotate(rotation);
+		}
+	}
+}
+
+//some times after connecting points, could be although it's vary rare that some points will not connect.
+//thus we going through all the unconnected points and connecting them.
+void Board::correctMissingEdges()
+{
+	for (int i = 0; i < m_points.size(); i++)
+	{
+		for (int j = 0; j < m_points[i].size(); j++)
+		{
+			std::vector<Point*> pVec;
+			connectMissingPoint(m_points[i][j].get(), pVec);
+		}
+	}
+}
+
+
+//this function connect a point to anothr points until we connecting to a turn on point.
+//this function will never end if there is no turn on point.
+void Board::connectMissingPoint(Point* point, std::vector<Point*>& pVec)
+{
+	if (!point->isOn())
+	{
+		for (auto& p : point->getNeighborList())
+		{
+			if (p && !point->isConnected(p) &&
+				std::find(pVec.begin(), pVec.end(), p) == pVec.end())
+			{				
+				point->connect(p);
+				point->turnOn();
+				if (p->isOn())
+				{
+					return;
+				}
+				else
+				{
+					pVec.push_back(point);
+					connectMissingPoint(p, pVec);
+				}
+				return;
+			}
 		}
 	}
 }

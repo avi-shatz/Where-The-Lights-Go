@@ -1,6 +1,6 @@
 #include <Game.h>
 
-constexpr auto LEVELS = 1;
+constexpr auto LEVELS = 3;
 constexpr auto MIN_LEVEL_SIZE = 5;
 constexpr auto ADD_LEVEL_SIZE = 2;  // Addition to the size of each 'level up'
 const auto TEXT_COLOR = sf::Color(129, 13, 152);

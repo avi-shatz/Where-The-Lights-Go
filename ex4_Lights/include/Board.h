@@ -30,6 +30,9 @@ private:
 	std::queue<Point*> enqueueMiddlePoint();
 	void connectQueue(std::queue<Point*> q);
 	void randomRotation();
+	void correctMissingEdges();
+	void connectMissingPoint(Point* point, std::vector<Point*>& pVec);
+
 private:
 	
 	PointsTbl m_points;
